@@ -196,11 +196,15 @@ exports.getStudentList = async (req, res) => {
       findObj.maxCTCOffered = { $lte: Number(req.query.dreamLPA) };
     }
     if (req.query.isParticipatingInPlacements) {
-      findObj.isParticipatingInPlacements = Boolean(
-        req.query.isParticipatingInPlacements
-      );
+      if (req.query.isParticipatingInPlacements === "true") {
+        findObj.isParticipatingInPlacements = true;
+      } else if (req.query.isParticipatingInPlacements === "false"){
+        findObj.isParticipatingInPlacements = false;
+      }
+      // findObj.isParticipatingInPlacements = Boolean(
+      //   req.query.isParticipatingInPlacements
+      // );
     }
-
     let sortObj = { collegeEmail: 1, _id: 1 };
     let students = {};
 
