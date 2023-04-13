@@ -16,7 +16,9 @@ const {
   getStudentProfile,
   updateStudentProfile,
   getStudentList,
-  getPlacementData
+  getPlacementData,
+  getPlacedList,
+  getUnplacedList
 } = require("../controllers/student");
 
 router.post(
@@ -67,7 +69,8 @@ router.get(
   handleValidationError,
   getStudentProfile
 );
-
+router.get("/getPlacedList", isSignedIn, getPlacedList);
+router.get("/getUnplacedList", isSignedIn, getUnplacedList);
 router.post(
   "/updateStudentProfile",
   isSignedIn,

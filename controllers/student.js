@@ -10,6 +10,7 @@ const GraduationGrades = require("../models/graduationGrades");
 const CGPAGrades = require("../models/cgpaGrades");
 const Addresses = require("../models/addresses");
 const CourseCredits = require("../models/courseCredits");
+const Student = require("../models/students");
 
 exports.studentRegister = async (req, res) => {
   try {
@@ -50,6 +51,34 @@ exports.studentRegister = async (req, res) => {
     res.status(500).json({ error: "Some error occurred" });
   }
 };
+exports.getPlacedList=async (req,res)=>{
+  try {
+    const teamMembers = await Student.find({ isPlaced: true  },"name designation phoneNo altPhoneNo department collegeEmail personalEmail company maxCTCOffered")
+    .then(users => {console.log("yes",users)
+  
+  res.json(users)})
+    .catch(err => console.log(err));
+    console.log("no",teamMembers)
+  
+  } catch (error) {
+    console.log("Error occurred in /viewTeam", error);
+    res.status(500).json({ error: "Some error occurred" });
+  }
+}
+exports.getUnplacedList=async (req,res)=>{
+  try {
+    const teamMembers = await Student.find({ isPlaced: false  },"name designation phoneNo altPhoneNo department collegeEmail personalEmail resumeLink linkedin")
+    .then(users => {console.log("yes",users)
+  
+  res.json(users)})
+    .catch(err => console.log(err));
+    console.log("no",teamMembers)
+  
+  } catch (error) {
+    console.log("Error occurred in /viewTeam", error);
+    res.status(500).json({ error: "Some error occurred" });
+  }
+}
 
 exports.getPlacementData = async (req, res) => {
   try {
