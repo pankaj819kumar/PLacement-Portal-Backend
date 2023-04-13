@@ -1,5 +1,6 @@
 const TeamMembers = require("../models/teamMembers");
-
+const Student = require("../models/students");
+const mongoose = require("mongoose");
 exports.getTeamMemberList = async (req, res) => {
   try {
     const page = req.query.page || 1;
@@ -68,16 +69,39 @@ exports.addTeamMember = async (req, res) => {
   }
 };
 
+// exports.updateTeamMember = async (req, res) => {
+//   try {
+//     const teamMemberId = req.body.teamMemberId;
+//     const teamMember = await TeamMembers.findOne({ _id: teamMemberId });
+//     if (!teamMember) {
+//       return res.status(404).json({ error: "Team member does not exist" });
+//     }
+//     const updatedTeamMember = await TeamMembers.updateOne(
+//       { _id: teamMemberId },
+//       req.body
+//     );
+//     if (updatedTeamMember.modifiedCount == 0) {
+//       return res.status(500).json({ error: "Failed to update team member" });
+//     }
+//     res.json({ msg: "Team member updated successfully" });
+//   } catch (error) {
+//     console.log("Error occurred in /updateTeamMember", error);
+//     res.status(500).json({ error: "Some error occurred" });
+//   }
+// };
 exports.updateTeamMember = async (req, res) => {
   try {
-    const teamMemberId = req.body.teamMemberId;
-    const teamMember = await TeamMembers.findOne({ _id: teamMemberId });
-    if (!teamMember) {
-      return res.status(404).json({ error: "Team member does not exist" });
+    const userId = req.body.userId;
+    console.log(userId);
+    const id = mongoose.Types.ObjectId(userId);
+    const user = await Student.findOne({ _id:id });
+    if (!user) {
+     console.log("User not found")
+      // return res.status(404).json({ error: "Team member does not exist" });
     }
-    const updatedTeamMember = await TeamMembers.updateOne(
-      { _id: teamMemberId },
-      req.body
+    const updatedTeamMember = await Student.updateOne(
+      {  _id: id },
+      {designation:req.body.designation}
     );
     if (updatedTeamMember.modifiedCount == 0) {
       return res.status(500).json({ error: "Failed to update team member" });
@@ -108,3 +132,17 @@ exports.deleteTeamMember = async (req, res) => {
     res.status(500).json({ error: "Some error occurred" });
   }
 };
+exports.viewTeam=async (req, res) =>{
+  try {
+    const teamMembers = await Student.find({ designation: { $ne: 'STUDENT',$exists: true } },"name designation phoneNo altPhoneNo department collegeEmail personalEmail")
+    .then(users => {console.log("yes",users)
+  
+  res.json(users)})
+    .catch(err => console.log(err));
+    console.log("no",teamMembers)
+  
+  } catch (error) {
+    console.log("Error occurred in /viewTeam", error);
+    res.status(500).json({ error: "Some error occurred" });
+  }
+}

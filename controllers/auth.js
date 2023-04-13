@@ -158,6 +158,7 @@ exports.isInPlacementTeam = (req, res, next) => {
   });
 };
 
+
 exports.isStudent = (req, res, next) => {
   const query = Users.findOne({ _id: req.auth._id }).select({
     _id: 0,
@@ -167,6 +168,20 @@ exports.isStudent = (req, res, next) => {
     if (error || !user || !user.roles.includes("STUDENT")) {
       return res.status(403).json({
         error: "You are not a student",
+      });
+    }
+    next();
+  });
+};
+exports.isTPO = (req, res, next) => {
+  const query = Users.findOne({ _id: req.auth._id }).select({
+    _id: 0,
+    roles: 1,
+  });
+  query.exec((error, user) => {
+    if (error || !user || !user.roles.includes("TPO")) {
+      return res.status(403).json({
+        error: "You are not TPO",
       });
     }
     next();

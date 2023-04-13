@@ -88,6 +88,11 @@ const studentSchema = new mongoose.Schema(
     company: {
       type: String,
     },
+    designation: {
+      type: String,
+      default:"STUDENT",
+      required: true,
+    }
   },
   { timestamps: true }
 );
