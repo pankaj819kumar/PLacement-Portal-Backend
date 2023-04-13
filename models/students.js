@@ -81,10 +81,11 @@ const studentSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    isEligible: {
-      type: Boolean,
-      default: true,
-    },
+    designation: {
+      type: String,
+      default:"STUDENT",
+      required: true,
+    }
   },
   { timestamps: true }
 );

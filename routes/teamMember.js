@@ -8,6 +8,7 @@ const {
   isInPlacementTeam,
   isSignedIn,
   getStudentAuth,
+  isTPO
 } = require("../controllers/auth");
 
 const {
@@ -16,6 +17,7 @@ const {
   addTeamMember,
   updateTeamMember,
   deleteTeamMember,
+  viewTeam,
 } = require("../controllers/teamMember");
 
 router.get("/getTeamMemberList", isSignedIn, getTeamMemberList);
@@ -58,20 +60,25 @@ router.post(
   addTeamMember
 );
 
-router.post(
-  "/updateTeamMember",
-  isSignedIn,
-  isInPlacementTeam,
-  [
-    check("teamMemberId")
-      .notEmpty()
-      .withMessage("Team member Id is required")
-      .custom((teamMemberId) => mongoose.isValidObjectId(teamMemberId))
-      .withMessage("Invalid Team member Id"),
-  ],
-  handleValidationError,
-  updateTeamMember
-);
+// router.post(
+//   "/updateTeamMember",
+//   isSignedIn,
+//   isInPlacementTeam,
+//   [
+//     check("teamMemberId")
+//       .notEmpty()
+//       .withMessage("Team member Id is required")
+//       .custom((teamMemberId) => mongoose.isValidObjectId(teamMemberId))
+//       .withMessage("Invalid Team member Id"),
+//   ],
+//   handleValidationError,
+//   updateTeamMember
+// );
+router.get("/viewTeam",
+viewTeam)
+router.post("/updateTeamMember", 
+updateTeamMember
+)
 
 router.delete(
   "/deleteTeamMember",
