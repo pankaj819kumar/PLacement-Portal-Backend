@@ -52,58 +52,10 @@ exports.studentRegister = async (req, res) => {
 };
 
 exports.getPlacementData = async (req, res) => {
-  // try {
-  //   const totalStudents = await Students.countDocuments();
-  //   const placedStudents = await Students.countDocuments({ isPlaced: true });
-  //   const highestPackage = await Students.findOne({isPlaced: true})
-  //     .sort('-maxCTCOffered')
-  //     .select('maxCTCOffered -_id')
-  //     .lean();
-  //   const lowestPackage = await Students.findOne({ isPlaced: true })
-  //     .sort('maxCTCOffered')
-  //     .select('maxCTCOffered -_id')
-  //     .lean();
-  //   const averagePackage = await Students.aggregate([
-  //     { $match: { isPlaced: true } },
-  //     { $group: { _id: null, averagePackage: { $avg: "$maxCTCOffered" } } },
-  //   ]);
-
-  //   const salaryRanges = await Students.aggregate([
-  //     { $match: { isPlaced: true } },
-  //     {
-  //       $bucket: {
-  //         groupBy: '$maxCTCOffered',
-  //         boundaries: [0, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, Infinity],
-  //         default: 'More than 60 LPA',
-  //         output: { count: { $sum: 1 } },
-  //       },
-  //     },
-  //     {
-  //       $project: {
-  //         _id: 0,
-  //         range: '$_id',
-  //         count: 1,
-  //       },
-  //     },
-  //   ]);
-  //   res.json({
-  //     totalStudents,
-  //     placedStudents,
-  //     highestPackage: highestPackage?.maxCTCOffered || 0,
-  //     lowestPackage: lowestPackage?.maxCTCOffered || 0,
-  //     averagePackage: averagePackage[0]?.maxCTCOffered || 0,
-  //     salaryRanges: Object.fromEntries(
-  //       salaryRanges.map((range) => [range.range, range.count])
-  //     ),
-  //   });
-  // } catch (error) {
-  //   console.error(error);
-  //   res.status(500).json({ error: 'Error in getting placement data' });
-  // }
   try {
-      const allStudents = await Students.find({});
+      // const allStudents = await Students.find({});
       const placedStudents = await Students.find({ isPlaced: true });
-      const unplacedStudents = await Students.find({ isPlaced: false });
+      // const unplacedStudents = await Students.find({ isPlaced: false });
       const participatingStudentsCount = await Students.countDocuments({ isParticipatingInPlacements: true });
   
       const placedSalaries = placedStudents.map(student => student.maxCTCOffered);
@@ -148,19 +100,29 @@ exports.getPlacementData = async (req, res) => {
         }
       });
   
-      const avgSalary = (placedSalaries.reduce((a, b) => a + b, 0) / placedSalaries.length).toFixed(2);
+    const avgSalary = (placedSalaries.reduce((a, b) => a + b, 0) / placedSalaries.length).toFixed(2);
+    let medianSalary;
+    const midIndex = Math.floor(placedSalaries.length/2);
+    if (placedSalaries.length % 2 === 0) {
+      medianSalary = ((placedSalaries[midIndex - 1] + placedSalaries[midIndex])/2).toFixed(2);
+    } else {
+      medianSalary = placedSalaries[midIndex].toFixed(2);
+    }
       
       const PlacedCount = placedStudents.length;
-      const totalUnplacedCount = unplacedStudents.length;
-      const totalStudentsCount = allStudents.length;
+      // const totalUnplacedCount = unplacedStudents.length;
+      // const totalStudentsCount = allStudents.length;
   
       res.status(200).json({
-        participatingStudentsCount,
-        PlacedCount,
-        highestPackage: highestSalary,
-        lowestPackage: lowestSalary,
-        averagePackage: avgSalary,
-        salaryRanges,
+        placementStats: {
+          participatingStudentsCount,
+          PlacedCount,
+          highestPackage: highestSalary,
+          lowestPackage: lowestSalary,
+          averagePackage: avgSalary,
+          medianPackage: medianSalary,
+        },
+        chartData: { salaryRanges }
       });
   } catch (error) {
       console.log(error);

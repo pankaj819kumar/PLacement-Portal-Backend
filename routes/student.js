@@ -101,8 +101,8 @@ router.get(
 
 router.get(
   "/getPlacementData",
-  // isSignedIn,
- // isInPlacementTeam,
+  isSignedIn,
+  isInPlacementTeam,
   // [
   //   check("courseId")
   //     .notEmpty()
