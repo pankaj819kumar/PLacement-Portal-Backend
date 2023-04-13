@@ -81,9 +81,12 @@ const studentSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    isEligible: {
+    isPlaced: {
       type: Boolean,
-      default: true,
+      default: false,
+    },
+    company: {
+      type: String,
     },
   },
   { timestamps: true }

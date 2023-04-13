@@ -16,6 +16,7 @@ const {
   getStudentProfile,
   updateStudentProfile,
   getStudentList,
+  getPlacementData
 } = require("../controllers/student");
 
 router.post(
@@ -96,6 +97,22 @@ router.get(
   ],
   handleValidationError,
   getStudentList
+);
+
+router.get(
+  "/getPlacementData",
+  // isSignedIn,
+ // isInPlacementTeam,
+  // [
+  //   check("courseId")
+  //     .notEmpty()
+  //     .withMessage("Course Id is required")
+  //     .custom((courseId) => mongoose.isValidObjectId(courseId))
+  //     .withMessage("Invalid Course Id"),
+  //   check("passingYear").notEmpty().withMessage("Passing year is required"),
+  // ],
+  // handleValidationError,
+  getPlacementData
 );
 
 module.exports = router;

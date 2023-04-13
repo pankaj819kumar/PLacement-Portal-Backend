@@ -51,6 +51,123 @@ exports.studentRegister = async (req, res) => {
   }
 };
 
+exports.getPlacementData = async (req, res) => {
+  // try {
+  //   const totalStudents = await Students.countDocuments();
+  //   const placedStudents = await Students.countDocuments({ isPlaced: true });
+  //   const highestPackage = await Students.findOne({isPlaced: true})
+  //     .sort('-maxCTCOffered')
+  //     .select('maxCTCOffered -_id')
+  //     .lean();
+  //   const lowestPackage = await Students.findOne({ isPlaced: true })
+  //     .sort('maxCTCOffered')
+  //     .select('maxCTCOffered -_id')
+  //     .lean();
+  //   const averagePackage = await Students.aggregate([
+  //     { $match: { isPlaced: true } },
+  //     { $group: { _id: null, averagePackage: { $avg: "$maxCTCOffered" } } },
+  //   ]);
+
+  //   const salaryRanges = await Students.aggregate([
+  //     { $match: { isPlaced: true } },
+  //     {
+  //       $bucket: {
+  //         groupBy: '$maxCTCOffered',
+  //         boundaries: [0, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, Infinity],
+  //         default: 'More than 60 LPA',
+  //         output: { count: { $sum: 1 } },
+  //       },
+  //     },
+  //     {
+  //       $project: {
+  //         _id: 0,
+  //         range: '$_id',
+  //         count: 1,
+  //       },
+  //     },
+  //   ]);
+  //   res.json({
+  //     totalStudents,
+  //     placedStudents,
+  //     highestPackage: highestPackage?.maxCTCOffered || 0,
+  //     lowestPackage: lowestPackage?.maxCTCOffered || 0,
+  //     averagePackage: averagePackage[0]?.maxCTCOffered || 0,
+  //     salaryRanges: Object.fromEntries(
+  //       salaryRanges.map((range) => [range.range, range.count])
+  //     ),
+  //   });
+  // } catch (error) {
+  //   console.error(error);
+  //   res.status(500).json({ error: 'Error in getting placement data' });
+  // }
+  try {
+      const allStudents = await Students.find({});
+      const placedStudents = await Students.find({ isPlaced: true });
+      const unplacedStudents = await Students.find({ isPlaced: false });
+      const participatingStudentsCount = await Students.countDocuments({ isParticipatingInPlacements: true });
+  
+      const placedSalaries = placedStudents.map(student => student.maxCTCOffered);
+      const highestSalary = Math.max(...placedSalaries);
+      const lowestSalary = Math.min(...placedSalaries);
+  
+      const salaryRanges = [
+        { label: '0 - 10 LPA', count: 0 },
+        { label: '10 - 15 LPA', count: 0 },
+        { label: '15 - 20 LPA', count: 0 },
+        { label: '20 - 25 LPA', count: 0 },
+        { label: '25 - 30 LPA', count: 0 },
+        { label: '30 - 35 LPA', count: 0 },
+        { label: '35 - 40 LPA', count: 0 },
+        { label: '40 - 45 LPA', count: 0 },
+        { label: '45 - 50 LPA', count: 0 },
+        { label: '> 50 LPA', count: 0 }
+      ];
+  
+      placedStudents.forEach(student => {
+        const salary = student.maxCTCOffered;
+        if (salary < 10) {
+          salaryRanges[0].count += 1;
+        } else if (salary < 15) {
+          salaryRanges[1].count += 1;
+        } else if (salary < 20) {
+          salaryRanges[2].count += 1;
+        } else if (salary < 25) {
+          salaryRanges[3].count += 1;
+        } else if (salary < 30) {
+          salaryRanges[4].count += 1;
+        } else if (salary < 35) {
+          salaryRanges[5].count += 1;
+        } else if (salary < 40) {
+          salaryRanges[6].count += 1;
+        } else if (salary < 45) {
+          salaryRanges[7].count += 1;
+        } else if (salary < 50) {
+          salaryRanges[8].count += 1;
+        } else {
+          salaryRanges[9].count += 1;
+        }
+      });
+  
+      const avgSalary = (placedSalaries.reduce((a, b) => a + b, 0) / placedSalaries.length).toFixed(2);
+      
+      const PlacedCount = placedStudents.length;
+      const totalUnplacedCount = unplacedStudents.length;
+      const totalStudentsCount = allStudents.length;
+  
+      res.status(200).json({
+        participatingStudentsCount,
+        PlacedCount,
+        highestPackage: highestSalary,
+        lowestPackage: lowestSalary,
+        averagePackage: avgSalary,
+        salaryRanges,
+      });
+  } catch (error) {
+      console.log(error);
+      res.status(500).json( { error: 'Error in getting placement data' } );
+    }  
+}
+
 exports.getStudentProfile = async (req, res) => {
   try {
     const studentId = req.query.studentId || req.auth.studentId;
