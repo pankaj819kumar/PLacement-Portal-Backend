@@ -17,7 +17,8 @@ const {
   updateStudentProfile,
   getStudentList,
   getPlacementData,
-  getPlacedList
+  getPlacedList,
+  getUnplacedList
 } = require("../controllers/student");
 
 router.post(
@@ -69,6 +70,7 @@ router.get(
   getStudentProfile
 );
 router.get("/getPlacedList", isSignedIn, getPlacedList);
+router.get("/getUnplacedList", isSignedIn, getUnplacedList);
 router.post(
   "/updateStudentProfile",
   isSignedIn,
