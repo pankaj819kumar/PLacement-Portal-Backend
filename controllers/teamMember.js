@@ -132,12 +132,28 @@ exports.deleteTeamMember = async (req, res) => {
     res.status(500).json({ error: "Some error occurred" });
   }
 };
+function sortDesignation(array) {
+  const designationPriority = {
+    'OVERALL CO-ORDINATOR': 0,
+    "MTECH CO-ORDINATOR": 1,
+    "BTECH CO-ORDINATOR": 2,
+    " PLACEMENT EXECUTIVE": 3
+  };
+
+  array.sort((a, b) => {
+    const aPriority = designationPriority[a.designation];
+    const bPriority = designationPriority[b.designation];
+    return aPriority - bPriority;
+  });
+
+  return array;
+}
 exports.viewTeam=async (req, res) =>{
   try {
     const teamMembers = await Student.find({ designation: { $ne: 'STUDENT',$exists: true } },"name designation phoneNo altPhoneNo department collegeEmail personalEmail")
     .then(users => {console.log("yes",users)
-  
-  res.json(users)})
+  const temp= sortDesignation(users)
+  res.json(temp)})
     .catch(err => console.log(err));
     console.log("no",teamMembers)
   
