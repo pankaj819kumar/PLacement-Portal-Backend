@@ -17,6 +17,7 @@ const {
   updateStudentProfile,
   getStudentList,
   getPlacementData,
+  getStudentListForTpo,
   getPlacedList,
   getUnplacedList
 } = require("../controllers/student");
@@ -100,6 +101,21 @@ router.get(
   ],
   handleValidationError,
   getStudentList
+);
+router.get(
+  "/getStudentListForTpo",
+  isSignedIn,
+  isInPlacementTeam,
+  [
+    check("courseId")
+      .notEmpty()
+      .withMessage("Course Id is required")
+      .custom((courseId) => mongoose.isValidObjectId(courseId))
+      .withMessage("Invalid Course Id"),
+    check("passingYear").notEmpty().withMessage("Passing year is required"),
+  ],
+  handleValidationError,
+  getStudentListForTpo
 );
 
 router.get(

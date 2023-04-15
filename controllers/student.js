@@ -423,3 +423,73 @@ exports.getStudentList = async (req, res) => {
     res.status(500).json({ error: "Some error occurred" });
   }
 };
+exports.getStudentListForTpo = async (req, res) => {
+  try {
+    //console.log(req.query)
+    const page = req.query.page || 1;
+    const entriesPerPage = Number(req.query.entriesPerPage) || 10;
+    const minCGPA = req.query.minCGPA || 0;
+    const aggregateCGPASemester = Number(req.query.aggregateCGPASemester) || 0;
+    /^abx/
+    const regex = new RegExp("^"+req.query.searchQuery, 'i');
+    var temp=[]
+await Student.find({ name: { $regex: regex } })
+  .then(users => {
+    // handle the result
+   temp=users
+   
+  })
+  .catch(error => {
+    // handle the error
+  });
+ //console.log(temp);
+
+  var data=[]
+  // for(let i=0;i<temp.length;i++) {
+  //   console.log(temp[i]);
+  // }
+  console.log(temp.length)
+  temp.forEach(function (users) {
+    console.log(users)
+var obj={
+_id:users._id,
+name:users.name,
+personalEmail:users.personalEmail,
+collegeEmail:users.collegeEmail,
+courseName:users.courseName,
+departmentName:users.departmentName,
+photo:users.photo,
+gender:users.gender,
+phoneNo:users.phoneNo,
+altPhoneNo:users.altPhoneNo,
+enrollmentNo:users.enrollmentNo,
+designation:users.designation,
+}
+data.push(obj);
+// result=[...result,obj];
+})
+console.log(data)
+
+
+
+
+
+
+
+   
+      // findObj.isParticipatingInPlacements = Boolean(
+      //   req.query.isParticipatingInPlacements
+      // );
+    
+   
+
+    res.json({
+      totalPages: Math.ceil(temp.length / entriesPerPage),
+      data,
+     
+    });
+  } catch (error) {
+    console.log("Error occurred in /getStudentList", error);
+    res.status(500).json({ error: "Some error occurred" });
+  }
+};
