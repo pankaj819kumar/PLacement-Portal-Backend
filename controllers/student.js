@@ -284,7 +284,7 @@ exports.getStudentList = async (req, res) => {
     const entriesPerPage = Number(req.query.entriesPerPage) || 10;
     const minCGPA = req.query.minCGPA || 0;
     const aggregateCGPASemester = Number(req.query.aggregateCGPASemester) || 0;
-
+  
     const courseCredits = await CourseCredits.findOne({
       courseId: req.query.courseId,
       year: req.query.passingYear,

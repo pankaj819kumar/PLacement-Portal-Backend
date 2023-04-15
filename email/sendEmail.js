@@ -15,8 +15,7 @@ const sendEmail = async (subject, html, recieverEmail) => {
 
   sgMail
     .send(message)
-    .then((response) => console.log("Email send"))
+    .then((response) => console.log("Email send",response))
     .catch((error) => console.log("Error sending email: ", error));
 };
-
 module.exports = sendEmail;

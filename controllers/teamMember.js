@@ -1,6 +1,7 @@
 const TeamMembers = require("../models/teamMembers");
 const Student = require("../models/students");
 const mongoose = require("mongoose");
+const User = require("../models/users");
 exports.getTeamMemberList = async (req, res) => {
   try {
     const page = req.query.page || 1;
@@ -99,10 +100,42 @@ exports.updateTeamMember = async (req, res) => {
      console.log("User not found")
       // return res.status(404).json({ error: "Team member does not exist" });
     }
+    console.log(id);
+    var uId;
+    Student.findOne({ _id: id }, (err, result) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+    uId=result.userId;
+    })
+
     const updatedTeamMember = await Student.updateOne(
       {  _id: id },
       {designation:req.body.designation}
     );
+    if(req.body.designation==="STUDENT")
+    {
+      User.updateOne({ _id: uId }, { $set: { roles: ["STUDENT"] } }, (err, result) => {
+        if (err) {
+          console.log(err);
+          return;
+        }
+      
+        console.log(result);
+      });
+    }
+    if(!(req.body.designation==="STUDENT"))
+    {
+      User.updateOne({ _id: uId }, {  $push: { roles: "PLACEMENT_TEAM" }  }, (err, result) => {
+        if (err) {
+          console.log(err);
+          return;
+        }
+      
+        console.log(result);
+      });
+    }
     if (updatedTeamMember.modifiedCount == 0) {
       return res.status(500).json({ error: "Failed to update team member" });
     }
